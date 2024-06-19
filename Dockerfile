@@ -8,8 +8,14 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Installer les dépendances
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt --no-cache-dir
+
+# Télécharger et installer les certificats SSL
+RUN apt-get update && apt-get install -y wget && \
+    wget https://letsencrypt.org/certs/lets-encrypt-r3.pem -O /usr/local/share/ca-certificates/lets-encrypt-r3.crt && \
+    wget https://letsencrypt.org/certs/isrg-root-x1-cross-signed.pem -O /usr/local/share/ca-certificates/isrg-root-x1-cross-signed.crt && \
+    update-ca-certificates
 
 # Copier le reste des fichiers de l'application dans le conteneur
 COPY . .
